@@ -24,6 +24,7 @@
 - `ping`
 - `prefix`
 - `info`
+- `snipe`
 
 ### Command Usage Table
 
@@ -41,4 +42,4 @@
 |Ping|`api`,`latency`|`zlyce/ping`|
 |Prefix|`setprefix`|`zlyce/prefix {new prefix}`|
 |Help|`None`|`zlyce/help [category/command]`|
-
+|Snipe|`None`|`zlyce/snipe`|

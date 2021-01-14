@@ -67,7 +67,7 @@ async def on_command_error(ctx, error):
   embed=discord.Embed(color=0xff0000) # Using the normal embed instead of the error function because i dont want to change its name lmao
   embed.timestamp=(ctx.message.created_at)
   embed.title='Error'
-  embed.description=str(error)
+  embed.description=f'{error}'
   embed.set_footer(text=name)
   embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
   await ctx.send(embed=embed) 
@@ -90,7 +90,7 @@ async def on_ready():
 @client.event
 async def on_guild_join(guild):
   with open("prefixes.json", "r") as f:
-    prefixes = json.load(f) 
+    prefixes = json.load(f)
 
   prefixes [int(guild.id)] = startingprefix # Sets the default prefix to 'zlyce/'
 
@@ -264,7 +264,7 @@ async def ban(ctx, member: discord.Member=None, *, args='No reason specified'):
   except:
     pass
 
-@client.command(aliases=['latency','api'])
+@client.command(aliases=['latency','api']) 
 async def ping(ctx):
   bot_ping = round(client.latency * 1000)
   await normalembed(ctx, 'API Reponse Time',f'{bot_ping}')
@@ -273,6 +273,38 @@ async def ping(ctx):
 async def info(ctx):
   await normalembed(ctx, 'Bot Info',f'**Hosted On:** [repl.it](https://repl.it)\n**GitHub Repo:** [Click Here](https://github.com/ZeroIntensity/Zlyce)\n**Servers:** {len(client.guilds)}\n**Users:** {len(client.users)}')
 
+
+
+@client.event
+async def on_message_delete(message):
+  with open("snipes.json", "r") as f:
+    snipes = json.load(f)
+    avurl = str(message.author.avatar_url).replace('//','slashslash')
+    x = {
+  "content": str(message.content),
+  "author": str(message.author),
+  "avatar_url": str(avurl),
+  "created_at": str(message.created_at.strftime("%Y-%m-%d %I:%M"))
+    }
+    snipes[str(message.guild.id)] = x
+  with open("snipes.json", "w") as f:
+    json.dump(snipes, f)
+
+@client.command()  
+async def snipe(ctx):
+  try:
+    with open("snipes.json", "r") as f:
+      snipes = json.load(f)
+      message = snipes[str(ctx.guild.id)]
+  except:
+    await error(ctx, 'I found nothing to snipe.')
+    return
+  avurl = str(message.get("avatar_url")).replace('slashslash', '//')
+  embed=discord.Embed(color=mainCol)
+  embed.title=message.get("content")
+  embed.set_footer(text=f'Requested by {ctx.author} • {message.get("created_at")}')
+  embed.set_author(name=message.get("author"), icon_url=avurl)
+  await ctx.send(embed=embed)
 
 
 dotenv.load_dotenv()
