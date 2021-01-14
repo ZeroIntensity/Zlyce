@@ -1,0 +1,78 @@
+@import url(https://fonts.googleapis.com/css?family=Bangers);
+
+::-webkit-scrollbar {
+height: 6px;
+width: 6px;
+}
+
+::-webkit-scrollbar-track {
+background: hsla(0,0%,5%,1);
+}
+
+::-webkit-scrollbar-thumb {
+background: hsla(0,0%,15%,1);
+}
+
+
+body {
+  background: #2C2F33;
+  font-family: "Bangers", sans-serif;
+}
+
+.container {
+position: absolute;
+top: 50%;  
+display: block;
+left: 50%;
+margin-right: -50%;
+transform: translate(-50%, -50%)
+}
+
+.button {
+color: white;
+padding: 20px 52px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 40px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 12px;
+transition: 200ms ease;
+box-shadow: 0px 0px 15px #000;
+}
+
+.button:hover {
+  opacity: 0.3;
+}
+
+.button:active {
+  opacity: 0.1;
+}
+
+.nav-link {
+  font-size: 30px;
+  margin: 10px;
+  transition: 200ms ease;
+  text-shadow: 0px 0px 10px #000;
+}
+
+.nav-link:hover {
+  opacity: 0.3;
+}
+
+.nav-link:active {
+  opacity: 0.2;
+}
+
+.anchor {
+transition: 200ms ease;
+}
+
+.anchor:hover {
+  opacity: 0.3;
+}
+
+.anchor:active {
+opacity: 0.2;
+}

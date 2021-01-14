@@ -5,13 +5,14 @@ import dotenv
 from server import keep_alive
 import os
 import asyncio
-mainCol = 0x0
+mainCol = 0x672bff
 name = 'Zlyce'
 startingprefix = f'{name.lower()}/'
 
 intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
+
 
 
 
@@ -60,6 +61,7 @@ client = commands.Bot(command_prefix = get_prefix, intents=intents) # Calls get_
 client.remove_command("help") # Remove premade help command
 
 
+
 @client.event
 async def on_command_error(ctx, error):
   embed=discord.Embed(color=0xff0000) # Using the normal embed instead of the error function because i dont want to change its name lmao
@@ -72,9 +74,9 @@ async def on_command_error(ctx, error):
 
 @client.event
 async def on_message(message):
-  if (message.content == f'<@!798624290567618580>') or (message.content == f'<@!798624290567618580> '):
+  if (message.content == f'<@!798624290567618580>') or (message.content == f'<@!798624290567618580> '): # With the space and without because yeah
     pre = await grab_prefix(ctx = message)
-    await message.channel.send(f'Hey {message.author.mention}! I\'m {name}! You can see all my commands using ``{pre}help``!')
+    await message.channel.send(f'Hey {message.author.mention}! I\'m {name}! You can see all my commands using ``{pre}help``!') 
 
   await client.process_commands(message) # yeah
 
@@ -83,6 +85,7 @@ async def on_ready():
   await client.wait_until_ready()
   print(f"Logged in as {client.user} ({client.user.id})") # Prints bot tag and ID
   await client.change_presence(activity=discord.Activity(name=f"{len(client.guilds)} Servers! | {startingprefix}help", type=discord.ActivityType.listening))
+  autostatus.start()
 
 @client.event
 async def on_guild_join(guild):
@@ -93,6 +96,14 @@ async def on_guild_join(guild):
 
   with open("prefixes.json", "w") as f:
     json.dump(prefixes, f)
+
+@tasks.loop(seconds=10)
+async def autostatus():
+  await asyncio.sleep(10)
+  await client.change_presence(activity=discord.Activity(name=f'{len(client.users)} Users! | {startingprefix}prefix <your new prefix>', type=discord.ActivityType.listening))
+
+  await asyncio.sleep(10)
+  await client.change_presence(activity=discord.Activity(name=f'{len(client.guilds)} Servers! | {startingprefix}help', type=discord.ActivityType.listening))
 
 
 
@@ -162,6 +173,7 @@ async def help(ctx, args=None):
     embed.description=f'Do ``{pre}help <command>`` for more help on a command\n\n`[] is an optional argument.`\n`<> is not an optional argument`'
     embed.add_field(name="Ping", value=f"Gets bot response time\n``{pre}ping``")
     embed.add_field(name="Prefix", value=f"Changes bot prefix\n``{pre}prefix <new prefix>``")
+    embed.add_field(name="Info", value=f"Gives bot info\n``{pre}info``")
     embed.set_footer(text=name)
     embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
@@ -174,8 +186,10 @@ async def help(ctx, args=None):
     await commandhelp(ctx, 'ban', f'``{pre}ban <@member> [reason]``','`None`')
   if args.lower() == 'kick':
     await commandhelp(ctx, 'kick', f'``{pre}kick <@member> [reason]``','`None`')
-  if args.lower() == 'ping':
+  if (args.lower() == 'ping') or (args.lower() == 'api') or (args.lower() == 'latency'):
     await commandhelp(ctx, 'ping', f'``{pre}ping``','`api`,`latency`')
+  if (args.lower() == 'information') or (args.lower() == 'info') or (args.lower() == 'stats'):
+    await commandhelp(ctx, 'info', f'``{pre}info``','`information`,`stats`')
 
 
 @client.command(aliases=['user'])
@@ -228,12 +242,12 @@ async def kick(ctx, member: discord.Member=None, *, args='No reason specified'):
 
 
 @client.command()
-async def ban(ctx, member: discord.Member=None, *, args='No reason specified'):
+async def ban(ctx, member: discord.Member=None, *, args='No reason specified'): 
   if not member:
     await error(ctx, 'Please specify a member to ban.')
   if not ctx.author.guild_permissions.ban_members:
     await error(ctx, 'You do not have permission to run this command.')
-  try:
+  try: # Probably a better way to do this but im lazy
     await member.ban(reason=args)
   except:
     await error(ctx, f'I don\'t have the permissions to ban `{member}`.')
@@ -254,6 +268,13 @@ async def ban(ctx, member: discord.Member=None, *, args='No reason specified'):
 async def ping(ctx):
   bot_ping = round(client.latency * 1000)
   await normalembed(ctx, 'API Reponse Time',f'{bot_ping}')
+
+@client.command(aliases=['information','stats'])
+async def info(ctx):
+  await normalembed(ctx, 'Bot Info',f'**Hosted On:** [repl.it](https://repl.it)\n**GitHub Repo:** [Click Here](https://github.com/ZeroIntensity/Zlyce)\n**Servers:** {len(client.guilds)}\n**Users:** {len(client.users)}')
+
+
+
 dotenv.load_dotenv()
 TOKEN = os.getenv("TOKEN")
 keep_alive()
