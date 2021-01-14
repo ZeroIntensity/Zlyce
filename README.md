@@ -25,6 +25,8 @@
 - `prefix`
 - `info`
 - `snipe`
+- `random`
+- `warn`
 
 ### Command Usage Table
 
@@ -43,3 +45,5 @@
 |Prefix|`setprefix`|`zlyce/prefix {new prefix}`|
 |Help|`None`|`zlyce/help [category/command]`|
 |Snipe|`None`|`zlyce/snipe`|
+|Random|`None`|`zlyce/random <text/number>`|
+|Warn|`Infraction`|`zlyce/warn <@member> [reason]`|
