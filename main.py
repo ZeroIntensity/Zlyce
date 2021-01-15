@@ -49,12 +49,12 @@ async def error(ctx, msg): # Premade embed for invalid arguments
   await ctx.send(embed=embed)
   return
 async def get_prefix(client, message): # This one is for the command_prefix
-  with open("prefixes.json", "r") as f:
+  with open("json/prefixes.json", "r") as f:
     prefixes = json.load(f)
     return prefixes[str(message.guild.id)]
 
 async def grab_prefix(ctx): # This one is used just to grab the guilds prefix in commands
-  with open("prefixes.json", "r") as f:
+  with open("json/prefixes.json", "r") as f:
     prefixes = json.load(f)
     return prefixes[str(ctx.guild.id)]
 
@@ -92,12 +92,12 @@ async def on_ready():
 
 @client.event
 async def on_guild_join(guild):
-  with open("prefixes.json", "r") as f:
+  with open("json/prefixes.json", "r") as f:
     prefixes = json.load(f)
 
   prefixes [int(guild.id)] = startingprefix # Sets the default prefix to 'zlyce/'
 
-  with open("prefixes.json", "w") as f:
+  with open("json/prefixes.json", "w") as f:
     json.dump(prefixes, f)
 
 @tasks.loop(seconds=10)
@@ -119,11 +119,11 @@ async def setprefix(ctx, *, args=None):
   if pre == args: # Checks if its the same as the current prefix
     await error(ctx, 'That is already set as your prefix')
     return
-  with open("prefixes.json", "r") as f:
+  with open("json/prefixes.json", "r") as f:
     prefixes = json.load(f)
 
     prefixes [str(ctx.guild.id)] = args # Sets the new prefix
-  with open("prefixes.json", "w") as f:
+  with open("json/prefixes.json", "w") as f:
     json.dump(prefixes, f)
   embed=discord.Embed(color=0x40ffa0)
   embed.timestamp=(ctx.message.created_at)
@@ -167,6 +167,9 @@ async def help(ctx, args=None):
     embed.description=f'Do ``{pre}help <command>`` for more help on a command\n\n`[] is an optional argument.`\n`<> is not an optional argument`'
     embed.add_field(name="Ban", value=f"Bans a member\n``{pre}ban <@member>``")
     embed.add_field(name="Kick", value=f"Kicks a member\n``{pre}kick <@member>``")
+    embed.add_field(name="Warn", value=f"Warns a member\n``{pre}warn <@member> [reason]``")
+    embed.add_field(name="Unwarn", value=f"Unwarns a member\n``{pre}unwarn <@member> <warn number>``")
+    embed.add_field(name="Warings", value=f"Check's a members warns\n``{pre}warnings [@member]``")
     embed.set_footer(text=name)
     embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
@@ -196,8 +199,12 @@ async def help(ctx, args=None):
     await commandhelp(ctx, 'info', f'``{pre}info``','`information`,`stats`')
   if args.lower() == 'random':
     await commandhelp(ctx, 'random', f'``{pre}random <text/number>``','`None`')
-  if args.lower() == 'warn':
+  if (args.lower() == 'warn') or (args.lower() == 'infraction'):
     await commandhelp(ctx, 'warn', f'``{pre}warn <@member> [reason]``','`infraction`')
+  if (args.lower() == 'unwarn') or (args.lower() == 'uninfraction'):
+    await commandhelp(ctx, 'unwarn', f'``{pre}unwarn <@member> <warn number>``','`uninfraction`')
+  if (args.lower() == 'warnings') or (args.lower() == 'warns') or (args.lower() == 'infractions'):
+    await commandhelp(ctx, 'warnings', f'``{pre}warnings [@member]``','`warns`,`infractions`')
 
 
 @client.command(aliases=['user']) # Command that gets user info
@@ -286,7 +293,7 @@ async def info(ctx): # No ones gonna use this but who cares
 
 @client.event
 async def on_message_delete(message):
-  with open("snipes.json", "r") as f:
+  with open("json/snipes.json", "r") as f:
     snipes = json.load(f)
     avurl = str(message.author.avatar_url).replace('//','slashslash') # Converts the // to slashslash so json doesnt comment it out
     x = { # Dictionary that will be used in the snipe command
@@ -295,13 +302,13 @@ async def on_message_delete(message):
   "avatar_url": str(avurl), # Gets the avatar url with the // replaced
     } 
     snipes[str(message.guild.id)] = x
-  with open("snipes.json", "w") as f:
+  with open("json/snipes.json", "w") as f:
     json.dump(snipes, f) 
 
 @client.command()  
 async def snipe(ctx):
   try:
-    with open("snipes.json", "r") as f:
+    with open("json/snipes.json", "r") as f:
       snipes = json.load(f)
       message = snipes[str(ctx.guild.id)]
   except:
@@ -341,7 +348,7 @@ async def warn(ctx, member: discord.Member = None, args='No reason specified'):
     await error(ctx, 'Please specify a member.')
     return
   
-  with open("warns.json", "r") as f:
+  with open("json/warns.json", "r") as f:
     warns = json.load(f)
     i = 1
     while True: # Cycles through all warnings until it returns an error
@@ -357,7 +364,7 @@ async def warn(ctx, member: discord.Member = None, args='No reason specified'):
   "warnnum": str(warnnum)
     } 
     warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + '-' + str(warnnum)] = x # Adds the warning
-  with open("warns.json", "w") as f:
+  with open("json/warns.json", "w") as f:
     json.dump(warns, f)
 
   await normalembed(ctx, 'Warn', f'{member.mention} was warned by {ctx.author.mention} for `{args}`. They now have {warnnum} warning(s).')
@@ -375,7 +382,7 @@ async def warn(ctx, member: discord.Member = None, args='No reason specified'):
 @client.command(aliases=['infractions','warns'])
 async def warnings(ctx, member: discord.Member = None):
   if not member:
-    with open("warns.json", "r") as f:
+    with open("json/warns.json", "r") as f:
       warns = json.load(f)
     try:
       warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + '-1']
@@ -404,7 +411,7 @@ async def warnings(ctx, member: discord.Member = None):
     await ctx.send(embed=embed)
     return
   
-  with open("warns.json", "r") as f:
+  with open("json/warns.json", "r") as f:
     warns = json.load(f)
   try:
     warn = warns[str(ctx.guild.id) + '-' + str(member.id) + '-1']
@@ -444,7 +451,7 @@ async def unwarn(ctx, member: discord.Member = None, args=None):
   if not args:
     await error(ctx, 'Please specify an error to remove.')
     return
-  with open("warns.json", "r") as f:
+  with open("json/warns.json", "r") as f:
     warns = json.load(f)
   try:
     warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
@@ -454,7 +461,7 @@ async def unwarn(ctx, member: discord.Member = None, args=None):
   await normalembed(ctx, 'Unwarn', f'Warn #{args} from {member.mention} was removed by {ctx.author.mention}.')
 
   del warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
-  with open('warns.json', 'w') as f: 
+  with open('json/warns.json', 'w') as f: 
     json.dump(warns, f) 
 
 dotenv.load_dotenv()
