@@ -27,23 +27,28 @@
 - `snipe`
 - `random`
 - `warn`
+- `warnings`
+- `unwarn`
 
 ### Command Usage Table
 
-[] Is an optional argument
-{} Is not an optional argument
+`[]` Is an optional argument
+`<>` Is not an optional argument
+
 `zlyce/` is the default prefix for the bot, so it will be used here. You can change the prefix using the following command: `zlyce/prefix <new prefix>` 
 
 |Command Name|Aliases|Usage|
 |----|-----|-------|
-|Ban|`None`|`zlyce/ban {@member}`|
-|Kick|`None`|`zlyce/kick {@member}`|
+|Ban|`None`|`zlyce/ban <@member>`|
+|Kick|`None`|`zlyce/kick <@member>`|
 |Member|`user`|`zlyce/member [@member]`|
 |Server|`guild`|`zlyce/server`|
 |Info|`information`,`stats`|`zlyce/info`|
 |Ping|`api`,`latency`|`zlyce/ping`|
-|Prefix|`setprefix`|`zlyce/prefix {new prefix}`|
+|Prefix|`setprefix`|`zlyce/prefix <new prefix>`|
 |Help|`None`|`zlyce/help [category/command]`|
 |Snipe|`None`|`zlyce/snipe`|
 |Random|`None`|`zlyce/random <text/number>`|
 |Warn|`Infraction`|`zlyce/warn <@member> [reason]`|
+|Unwarn|`Uninfraction`|`zlyce/unwarn <@member> <warn number>`|
+|Warnings|`Infractions`,`Warns`|`zlyce/warns [@member]`|

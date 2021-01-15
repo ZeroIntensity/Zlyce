@@ -6,6 +6,7 @@ from server import keep_alive
 import os
 import asyncio
 import string
+import traceback
 import random as rand
 mainCol = 0x672bff
 name = 'Zlyce'
@@ -61,7 +62,9 @@ client = commands.Bot(command_prefix = get_prefix, intents=intents) # Calls get_
 
 client.remove_command("help") # Remove premade help command
 
-
+@client.event
+async def on_error(ctx, err):
+  print(traceback.format_exc())
 
 @client.event
 async def on_command_error(ctx, error):
@@ -71,8 +74,7 @@ async def on_command_error(ctx, error):
   embed.description=f'{error}'
   embed.set_footer(text=name)
   embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-  await ctx.send(embed=embed) 
-
+  await ctx.send(embed=embed)
 @client.event
 async def on_message(message):
   if (message.content == f'<@!798624290567618580>') or (message.content == f'<@!798624290567618580> '): # With the space and without because yeah
@@ -329,29 +331,36 @@ async def random(ctx, args=None):
   else:
     await error(ctx, 'That is not a valid option.')
   
+
 @client.command(aliases=['infraction'])
 async def warn(ctx, member: discord.Member = None, args='No reason specified'):
+  if not ctx.author.guild_permissions.manage_messages:
+    await error(ctx, 'You do not have permission to run this command.')
+    return
   if not member:
     await error(ctx, 'Please specify a member.')
     return
   
   with open("warns.json", "r") as f:
     warns = json.load(f)
-    try:
-      warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id)]
-      oldwarnnum = warn.get("warnnum")
-      warnnum = int(oldwarnnum) + 1
-    except:
-      warnnum = 1
+    i = 1
+    while True: # Cycles through all warnings until it returns an error
+      try:
+        warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{i}']
+        i += 1
+      except:
+        warnnum = i
+        break
     x = {
   "author": str(ctx.author),
   "reason": str(args),
   "warnnum": str(warnnum)
     } 
-    warns[str(ctx.guild.id) + '-' + str(ctx.author.id)] = x
+    warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + '-' + str(warnnum)] = x # Adds the warning
   with open("warns.json", "w") as f:
-    json.dump(warns, f) 
-  
+    json.dump(warns, f)
+
+  await normalembed(ctx, 'Warn', f'{member.mention} was warned by {ctx.author.mention} for `{args}`. They now have {warnnum} warning(s).')
   embed=discord.Embed(color=mainCol)
   embed.timestamp=(ctx.message.created_at)
   embed.title='Warn'
@@ -359,9 +368,95 @@ async def warn(ctx, member: discord.Member = None, args='No reason specified'):
   embed.set_footer(text=name)
   embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
   try:
-    await member.send(embed=embed)
+    await member.send(embed=embed) # Trys to send an embed telling someone that they were warned. if they have DMs closed, it ignores it
   except:
     pass
+
+@client.command(aliases=['infractions','warns'])
+async def warnings(ctx, member: discord.Member = None):
+  if not member:
+    with open("warns.json", "r") as f:
+      warns = json.load(f)
+    try:
+      warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + '-1']
+    except:
+      await normalembed(ctx, 'Warnings', f'{ctx.author.mention} doesn\'t have any warnings')
+      return
+    i = 1
+    while True:
+      try:
+        warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{i}']
+        i += 1
+      except:
+        i -= 1
+        break
+    embed=discord.Embed(color=mainCol)
+    embed.timestamp=(ctx.message.created_at)
+    embed.title='Warnings'
+    embed.description=f'{ctx.author.mention} has **{i}** warning(s).'
+    embed.set_footer(text=name)
+    embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+    pre = await grab_prefix(ctx)
+    for x in range(1, i+1):
+      warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{x}']
+      embed.add_field(name=f"Warning #{x}", value='**Reason:** ``' + warn.get('reason') + f'``\nUse ``{pre}unwarn {x}`` to remove it')
+
+    await ctx.send(embed=embed)
+    return
+  
+  with open("warns.json", "r") as f:
+    warns = json.load(f)
+  try:
+    warn = warns[str(ctx.guild.id) + '-' + str(member.id) + '-1']
+  except:
+    await normalembed(ctx, 'Warnings', f'{member.mention} doesn\'t have any warnings')
+    return
+  i = 1
+  while True:
+    try:
+      warn = warns[str(ctx.guild.id) + '-' + str(member.id) + f'-{i}']
+      i += 1
+    except:
+      i -= 1
+      break
+  embed=discord.Embed(color=mainCol)
+  embed.timestamp=(ctx.message.created_at)
+  embed.title='Warnings'
+  embed.description=f'{member.mention} has **{i}** warning(s).'
+  embed.set_footer(text=name)
+  embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+  pre = await grab_prefix(ctx)
+  for x in range(1, i+1):
+    warn = warns[str(ctx.guild.id) + '-' + str(member.id) + f'-{x}']
+    embed.add_field(name=f"Warning #{x}", value='**Reason:** ``' + warn.get('reason') + f'``\nUse ``{pre}unwarn {x}`` to remove it')
+
+  await ctx.send(embed=embed)
+
+
+@client.command(aliases=['uninfraction'])
+async def unwarn(ctx, member: discord.Member = None, args=None):
+  if not ctx.author.guild_permissions.manage_messages:
+    await error(ctx, 'You do not have permission to run this command.')
+    return
+  if not member:
+    await error(ctx, 'Please specify a member.')
+    return
+  if not args:
+    await error(ctx, 'Please specify an error to remove.')
+    return
+  with open("warns.json", "r") as f:
+    warns = json.load(f)
+  try:
+    warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
+  except:
+    await error(ctx, 'That user doesn\'t have that warn.')
+    return
+  await normalembed(ctx, 'Unwarn', f'Warn #{args} from {member.mention} was removed by {ctx.author.mention}.')
+
+  del warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
+  with open('warns.json', 'w') as f: 
+    json.dump(warns, f) 
+
 dotenv.load_dotenv()
 TOKEN = os.getenv("TOKEN")
 keep_alive()
