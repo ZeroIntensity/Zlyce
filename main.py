@@ -8,7 +8,7 @@ import asyncio
 import string
 import traceback
 import random as rand
-mainCol = 0x672bff
+mainCol = 0xa147ff
 name = 'Zlyce'
 startingprefix = f'{name.lower()}/'
 
@@ -64,7 +64,7 @@ client.remove_command("help") # Remove premade help command
 
 @client.event
 async def on_error(ctx, err):
-  print(traceback.format_exc())
+  print(err)
 
 @client.event
 async def on_command_error(ctx, error):
@@ -397,7 +397,7 @@ async def warnings(ctx, member: discord.Member = None):
       except:
         i -= 1
         break
-    embed=discord.Embed(color=mainCol)
+    embed=discord.Embed(color=mainCol) # Have to use a normal embed for fields
     embed.timestamp=(ctx.message.created_at)
     embed.title='Warnings'
     embed.description=f'{ctx.author.mention} has **{i}** warning(s).'
@@ -416,7 +416,7 @@ async def warnings(ctx, member: discord.Member = None):
   try:
     warn = warns[str(ctx.guild.id) + '-' + str(member.id) + '-1']
   except:
-    await normalembed(ctx, 'Warnings', f'{member.mention} doesn\'t have any warnings')
+    await normalembed(ctx, 'Warnings', f'{member.mention} doesn\'t have any warnings') 
     return
   i = 1
   while True:
@@ -426,7 +426,7 @@ async def warnings(ctx, member: discord.Member = None):
     except:
       i -= 1
       break
-  embed=discord.Embed(color=mainCol)
+  embed=discord.Embed(color=mainCol) # Have to use a normal embed for fields
   embed.timestamp=(ctx.message.created_at)
   embed.title='Warnings'
   embed.description=f'{member.mention} has **{i}** warning(s).'
@@ -442,28 +442,38 @@ async def warnings(ctx, member: discord.Member = None):
 
 @client.command(aliases=['uninfraction'])
 async def unwarn(ctx, member: discord.Member = None, args=None):
-  if not ctx.author.guild_permissions.manage_messages:
-    await error(ctx, 'You do not have permission to run this command.')
-    return
-  if not member:
-    await error(ctx, 'Please specify a member.')
-    return
-  if not args:
-    await error(ctx, 'Please specify an error to remove.')
-    return
-  with open("json/warns.json", "r") as f:
-    warns = json.load(f)
-  try:
-    warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
-  except:
-    await error(ctx, 'That user doesn\'t have that warn.')
-    return
-  await normalembed(ctx, 'Unwarn', f'Warn #{args} from {member.mention} was removed by {ctx.author.mention}.')
+  try: # For debugging issues
+    if not ctx.author.guild_permissions.manage_messages:
+      await error(ctx, 'You do not have permission to run this command.')
+      return
+    if not member:
+      await error(ctx, 'Please specify a member.')
+      return
+    if not args:
+      await error(ctx, 'Please specify an error to remove.')
+      return
+    with open("json/warns.json", "r") as f:
+      warns = json.load(f)
+    try:
+      warn = warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
+    except:
+      await error(ctx, 'That user doesn\'t have that warn.')
+      return
+    await normalembed(ctx, 'Unwarn', f'Warn #{args} from {member.mention} was removed by {ctx.author.mention}.')
 
-  del warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
-  with open('json/warns.json', 'w') as f: 
-    json.dump(warns, f) 
+    del warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{args}']
+    i = int(int(args) + 1)
 
+
+    for j in range(int(int(args) + 1), int(i)): # Change the warnnum
+      print(j)
+      warns[str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{j}'] = warns.pop(str(ctx.guild.id) + '-' + str(ctx.author.id) + f'-{j + 1}')
+
+
+    with open('json/warns.json', 'w') as f: 
+      json.dump(warns, f) 
+  except Exception as err:
+    print(traceback.format_exc())
 dotenv.load_dotenv()
 TOKEN = os.getenv("TOKEN")
 keep_alive()
