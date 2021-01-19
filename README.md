@@ -3,6 +3,7 @@
 ## New Features
 - Upgraded `snipe` command to only snipe messages from that channel.
 - Added a snow falling background to [zlyce.xyz](https://zlyce.xyz).
+- Added changelog page to [zlyce.xyz](https://zlyce.xyz).
 
 ## Credits
 ### Dependencies
@@ -60,10 +61,15 @@
 ## Notes
 ### Version Notes
 Current Version: `development`
+Full changelog: https://zlyce.xyz/changelog/development/1.19.21
 
 |MM/DD/YY|Version|Notes|
 |----|-----|-------|
 |1/19/21|`development`|Changed `snipe` command to only snipe messages from the current channel, and added a snow falling bg to [zlyce.xyz](https://zlyce.xyz).|
+
+**Changelogs**
+
+- **development 1.19.21** - https://zlyce.xyz/changelog/development/1.19.21
 
 ### Known Bugs
 
@@ -79,7 +85,7 @@ Current Version: `development`
 - `lock` command.
 - Upgraded `info` command.
 - Add `support` page on [zlyce.xyz](https://zlyce.xyz).
-- Add changelogs to [zlyce.xyz](https://zlyce.xyz).
+- Add page that shows all changelogs to [zlyce.xyz](https://zlyce.xyz).
 - Add the `Command Usage Table` to [zlyce.xyz](https://zlyce.xyz).
 - Add leveling system.
 - Add econonmy system.
