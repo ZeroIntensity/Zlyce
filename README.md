@@ -1,4 +1,8 @@
-# Last updated: 1/14/21
+# Last updated: 1/19/21
+
+## New Features
+- Upgraded `snipe` command to only snipe messages from that channel.
+- Added a snow falling background to [zlyce.xyz](https://zlyce.xyz).
 
 ## Credits
 ### Dependencies
@@ -13,8 +17,7 @@
 - [zintensity.net](https://zintensity.net)
 
 ## Commands
-### All Commands
-**Note:** There are still commands to be added, these are just the implemented ones
+### Implemented Commands
 
 - `help`
 - `kick`
@@ -32,8 +35,9 @@
 
 ### Command Usage Table
 
-`[]` Is an optional argument
-`<>` Is not an optional argument
+`[]` Is an optional argument.
+
+`<>` Is not an optional argument.
 
 `zlyce/` is the default prefix for the bot, so it will be used here. You can change the prefix using the following command: `zlyce/prefix <new prefix>` 
 
@@ -52,3 +56,30 @@
 |Warn|`Infraction`|`zlyce/warn <@member> [reason]`|
 |Unwarn|`Uninfraction`|`zlyce/unwarn <@member> <warn number>`|
 |Warnings|`Infractions`,`Warns`|`zlyce/warns [@member]`|
+
+## Notes
+### Version Notes
+Current Version: `development`
+
+|MM/DD/YY|Version|Notes|
+|----|-----|-------|
+|1/19/21|`development`|Changed `snipe` command to only snipe messages from the current channel, and added a snow falling bg to [zlyce.xyz](https://zlyce.xyz).|
+
+### Known Bugs
+
+* [ ] `unwarn` command does not work.
+* [ ] `warnings` works, but breaks after using the `unwarn` command. 
+* [ ] [zlyce.xyz](https://zlyce.xyz) does not work for mobile users.
+
+
+### Planned Features
+**There are still more features to be planned**
+
+- `mute` command.
+- `lock` command.
+- Upgraded `info` command.
+- Add `support` page on [zlyce.xyz](https://zlyce.xyz).
+- Add changelogs to [zlyce.xyz](https://zlyce.xyz).
+- Add the `Command Usage Table` to [zlyce.xyz](https://zlyce.xyz).
+- Add leveling system.
+- Add econonmy system.

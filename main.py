@@ -75,6 +75,7 @@ async def on_command_error(ctx, error):
   embed.set_footer(text=name)
   embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
   await ctx.send(embed=embed)
+
 @client.event
 async def on_message(message):
   if (message.content == f'<@!798624290567618580>') or (message.content == f'<@!798624290567618580> '): # With the space and without because yeah
@@ -295,13 +296,13 @@ async def info(ctx): # No ones gonna use this but who cares
 async def on_message_delete(message):
   with open("json/snipes.json", "r") as f:
     snipes = json.load(f)
-    avurl = str(message.author.avatar_url).replace('//','slashslash') # Converts the // to slashslash so json doesnt comment it out
-    x = { # Dictionary that will be used in the snipe command
+  avurl = str(message.author.avatar_url).replace('//','slashslash') # Converts the // to slashslash so json doesnt comment it out
+  x = { # Dictionary that will be used in the snipe command
   "content": str(message.content), # Gets the message content
   "author": str(message.author), # Gets the author
-  "avatar_url": str(avurl), # Gets the avatar url with the // replaced
+  "avatar_url": str(avurl) # Gets the avatar url with the // replaced
     } 
-    snipes[str(message.guild.id)] = x
+  snipes[str(message.channel.id)] = x
   with open("json/snipes.json", "w") as f:
     json.dump(snipes, f) 
 
@@ -310,7 +311,7 @@ async def snipe(ctx):
   try:
     with open("json/snipes.json", "r") as f:
       snipes = json.load(f)
-      message = snipes[str(ctx.guild.id)]
+      message = snipes[str(ctx.message.channel.id)]
   except:
     await error(ctx, 'I found nothing to snipe.')
     return
