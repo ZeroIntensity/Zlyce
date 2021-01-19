@@ -59,7 +59,6 @@ async def grab_prefix(ctx): # This one is used just to grab the guilds prefix in
     return prefixes[str(ctx.guild.id)]
 
 client = commands.Bot(command_prefix = get_prefix, intents=intents) # Calls get_prefix every time
-
 client.remove_command("help") # Remove premade help command
 
 @client.event
@@ -108,6 +107,8 @@ async def autostatus():
 
   await asyncio.sleep(10) # Also waits 10 seconds
   await client.change_presence(activity=discord.Activity(name=f'{len(client.guilds)} Servers! | {startingprefix}help', type=discord.ActivityType.listening))
+  await asyncio.sleep(10) # Again, waits 10 seconds
+  await client.change_presence(activity=discord.Activity(name=f'https://zlyce.xyz | {startingprefix}help', type=discord.ActivityType.playing))
 
 
 

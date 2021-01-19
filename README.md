@@ -4,6 +4,7 @@
 - Upgraded `snipe` command to only snipe messages from that channel.
 - Added a snow falling background to [zlyce.xyz](https://zlyce.xyz).
 - Added changelog page to [zlyce.xyz](https://zlyce.xyz).
+- Added another status to the autostatus.
 
 ## Credits
 ### Dependencies
