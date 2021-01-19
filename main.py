@@ -207,6 +207,9 @@ async def help(ctx, args=None):
   if (args.lower() == 'warnings') or (args.lower() == 'warns') or (args.lower() == 'infractions'):
     await commandhelp(ctx, 'warnings', f'``{pre}warnings [@member]``','`warns`,`infractions`')
 
+@client.command()
+async def isbis(ctx): # heheheheh
+  await ctx.send('isbis triple gay')
 
 @client.command(aliases=['user']) # Command that gets user info
 async def member(ctx, member: discord.Member=None):
